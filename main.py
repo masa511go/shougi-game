@@ -292,6 +292,13 @@ def draw_movable_positions(window, movable_positions):
         )
         window.blit(circle_surface, (x, y))  # todo
 
+def check_game_over(now_turn,click_piece):
+    if click_piece == None:
+        running = True
+        winner = False
+        return (running,winner)
+    if click_piece.type == :
+
 
 class Piece:
     def __init__(self, type, is_sente):
@@ -311,6 +318,7 @@ def main():
     pygame.display.set_caption("shogi")  # 画面上部のタイトル設定
     image_things = load_pieces((80, 80))
     running = True
+    now_turn = True #True:先手 False:後手
     board = initialize_board()
     global selected_pos
     movable = []
@@ -340,20 +348,20 @@ def main():
                         piece = board[click_pos_y][click_pos_x]
                         if selected_pos is None:  # 駒を選択
                             if board[click_pos_y][click_pos_x] is not None:
-                                selected_pos = clicked_pos
-                                movable = get_piece_moves(
-                                    piece,
-                                    selected_pos,
-                                    board,
-                                    PIECE_MOVES[piece.type],
-                                )
+                                if board[click_pos_y][click_pos_x].is_sente == now_turn:
+                                    selected_pos = clicked_pos
+                                    movable = get_piece_moves(
+                                        piece,
+                                        selected_pos,
+                                        board,
+                                        PIECE_MOVES[piece.type],
+                                    )
 
                         else:  # 駒が選択されてたら
                             if judge_moving(board, clicked_pos, movable):
-                                board[click_pos_y][click_pos_x] = board[
-                                    selected_pos[1]
-                                ][selected_pos[0]]
+                                board[click_pos_y][click_pos_x] = board[selected_pos[1]][selected_pos[0]]
                                 board[selected_pos[1]][selected_pos[0]] = None
+                                now_turn = not now_turn
                             selected_pos = None
                             movable = []
             draw_movable_positions(window, movable)
