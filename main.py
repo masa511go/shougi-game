@@ -209,17 +209,12 @@ def load_pieces(size):
     return pieces
 
 
-def judge_moving(board, clicked_pos):
-    if clicked_pos == selected_pos:
+def judge_moving(board, clicked_pos, movable_positions):
+    if clicked_pos == selected_pos:  # いらないかも
         return False
-    if board[clicked_pos[1]][clicked_pos[0]] is None:
+    if list(clicked_pos) in movable_positions:
         return True
-    if (
-        board[clicked_pos[1]][clicked_pos[0]].is_sente
-        == board[selected_pos[1]][selected_pos[0]].is_sente
-    ):
-        return False
-    return True
+    return False
 
 
 def get_single_moves(piece, from_pos, board, move_patterns):
@@ -343,7 +338,7 @@ def main():
                     ):
                         clicked_pos = (click_pos_x, click_pos_y)
                         piece = board[click_pos_y][click_pos_x]
-                        if selected_pos is None:
+                        if selected_pos is None:  # 駒を選択
                             if board[click_pos_y][click_pos_x] is not None:
                                 selected_pos = clicked_pos
                                 movable = get_piece_moves(
@@ -353,8 +348,8 @@ def main():
                                     PIECE_MOVES[piece.type],
                                 )
 
-                        else:
-                            if judge_moving(board, clicked_pos):
+                        else:  # 駒が選択されてたら
+                            if judge_moving(board, clicked_pos, movable):
                                 board[click_pos_y][click_pos_x] = board[
                                     selected_pos[1]
                                 ][selected_pos[0]]
