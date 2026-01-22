@@ -293,11 +293,29 @@ def draw_movable_positions(window, movable_positions):
         window.blit(circle_surface, (x, y))  # todo
 
 def check_game_over(now_turn,click_piece):
-    if click_piece == None:
-        running = True
-        winner = False
+    running = True
+    winner = None
+    if click_piece is None:
         return (running,winner)
-    if click_piece.type == :
+    if click_piece.type == "OU" or click_piece.type == "GY":
+        winner = now_turn
+        running = False
+        return(running,winner)
+    return(running,winner)
+
+def game_over(window,winner):
+    write_str = "Sente win!" if winner else "Gote win!"
+    write_character(
+        window,
+        [WINDOW_WIDTH // 2 - 100, WINDOW_HEIGHT // 2 - 50],
+        write_str,
+        64,
+        COLOR["White"]
+    )
+    pygame.display.update()
+    pygame.time.wait(2000)
+    pygame.quit()
+    sys.exit()
 
 
 class Piece:
@@ -361,11 +379,18 @@ def main():
                             if judge_moving(board, clicked_pos, movable):
                                 board[click_pos_y][click_pos_x] = board[selected_pos[1]][selected_pos[0]]
                                 board[selected_pos[1]][selected_pos[0]] = None
+                                running,winner = check_game_over(now_turn,piece)
+                                if running is False:
+                                    print(winner)
                                 now_turn = not now_turn
                             selected_pos = None
                             movable = []
             draw_movable_positions(window, movable)
             pygame.display.update()
+    window.fill(COLOR["Black"])
+    draw_board(window)
+    position_pieces(window, image_things,board)
+    game_over(window,winner)
 
 
 def draw_board(window):
