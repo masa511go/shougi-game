@@ -76,6 +76,15 @@ PIECE_MOVES = {
     "KA": [(-1, -1), (-1, 1), (1, -1), (1, 1)],
 }
 
+PROMOTION_PIECE = {
+        "FU": "TO",
+        "KY": "NY",
+        "KE": "NK",
+        "GI": "NG",
+        "HI": "RY",
+        "KA": "UM"
+    }
+
 CONTINUOUS_MOVERS = {"KY", "KA", "HI"}
 
 selected_pos = None
@@ -181,11 +190,11 @@ def load_pieces(size):
         "HI",
         "KA",
         "TO",
-        "NAKY",
-        "NAKE",
-        "NAGI",
-        "RYU",
-        "UMA",
+        "NY",
+        "NK",
+        "NG",
+        "RY",
+        "UM",
     ]
     match_name = {
         "FU": "hohei",
@@ -197,11 +206,11 @@ def load_pieces(size):
         "HI": "hisya",
         "KA": "kaku",
         "TO": "tokin",
-        "NAKY": "narikyou",
-        "NAKE": "narikei",
-        "NAGI": "narigin",
-        "RYU": "ryuu",
-        "UMA": "uma",
+        "NY": "narikyou",
+        "NK": "narikei",
+        "NG": "narigin",
+        "RY": "ryuu",
+        "UM": "uma",
     }
     for name in piece_names:
         pieces[name] = pygame.image.load(f"assets/pieces/shogi_{match_name[name]}.png")
@@ -291,6 +300,17 @@ def draw_movable_positions(window, movable_positions):
             radius,
         )
         window.blit(circle_surface, (x, y))  # todo
+
+def check_promotion(piece,x,y):
+    if piece is not None:
+        if not(piece.is_promoted) and piece.type in PROMOTION_PIECE:
+            if piece.is_sente:
+                if y <= 2:
+                    return True
+            elif not piece.is_sente:
+                if y >= SQUARE_NUMBER - 3:
+                    return True
+    return False
 
 def check_game_over(now_turn,click_piece):
     running = True
