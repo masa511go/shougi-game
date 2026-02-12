@@ -349,6 +349,11 @@ class Piece:
             return "N" + self.type  # 成り駒には”N”をつける
         return self.type
 
+    def promotion_pieces(self,type):
+        get_promoted_piece = PROMOTION_PIECE[type]
+        self.is_promoted = True
+        type = get_promoted_piece
+
 
 def main():
     pygame.init()  # 画面初期化処理
