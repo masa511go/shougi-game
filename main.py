@@ -407,6 +407,8 @@ def main():
                                 running,winner = check_game_over(now_turn,piece)
                                 if running is False:
                                     print(winner)
+                                if check_promotion(piece,click_pos_x,click_pos_y):
+                                    Piece.promotion_pieces()
                                 now_turn = not now_turn
                             selected_pos = None
                             movable = []
