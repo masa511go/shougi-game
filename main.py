@@ -87,6 +87,8 @@ PROMOTION_PIECE = {
 
 CONTINUOUS_MOVERS = {"KY", "KA", "HI"}
 
+PROMOTION_MOVERS = {"TO","NY","NK","NG","RY","UM"}
+
 selected_pos = None
 
 
@@ -194,7 +196,7 @@ def load_pieces(size):
         "NK",
         "NG",
         "RY",
-        "UM",
+        "UM"
     ]
     match_name = {
         "FU": "hohei",
@@ -275,11 +277,22 @@ def get_continuous_moves(piece, from_pos, board, move_patterns):
     return movable_pos
 
 
-def get_piece_moves(piece, from_pos, board, move_patterns):
+def get_piece_moves(piece, from_pos, board):
     if piece.type in CONTINUOUS_MOVERS:
-        moves = get_continuous_moves(piece, from_pos, board, move_patterns)
+        moves = get_continuous_moves(piece, from_pos, board, PIECE_MOVES[piece.type])
+    elif piece.type in PROMOTION_MOVERS:
+        if piece.type == "RY":
+            moves1 = get_continuous_moves(piece, from_pos, board, PIECE_MOVES["HI"])
+            moves2 = get_single_moves(piece, from_pos, board, PIECE_MOVES["OU"])
+            moves = moves1 + moves2
+        elif piece.type == "UM":
+            moves1 = get_continuous_moves(piece, from_pos, board, PIECE_MOVES["KA"])
+            moves2 = get_single_moves(piece, from_pos, board, PIECE_MOVES["OU"])
+            moves = moves1 + moves2
+        else:
+            moves = get_single_moves(piece, from_pos, board, PIECE_MOVES["KI"])
     else:
-        moves = get_single_moves(piece, from_pos, board, move_patterns)
+        moves = get_single_moves(piece, from_pos, board, PIECE_MOVES[piece.type])
     return moves
 
 
@@ -305,7 +318,7 @@ def check_promotion(piece,x,y):
     if piece is not None:
         if not(piece.is_promoted) and piece.type in PROMOTION_PIECE:
             if piece.is_sente:
-                if y <= 2:
+                if  y <= 2:
                     return True
             elif not piece.is_sente:
                 if y >= SQUARE_NUMBER - 3:
@@ -396,8 +409,7 @@ def main():
                                     movable = get_piece_moves(
                                         piece,
                                         selected_pos,
-                                        board,
-                                        PIECE_MOVES[piece.type],
+                                        board
                                     )
 
                         else:  # 駒が選択されてたら
@@ -407,8 +419,8 @@ def main():
                                 running,winner = check_game_over(now_turn,piece)
                                 if running is False:
                                     print(winner)
-                                if check_promotion(piece,click_pos_x,click_pos_y):
-                                    Piece.promotion_pieces()
+                                if check_promotion(board[click_pos_y][click_pos_x],click_pos_x,click_pos_y):
+                                    board[click_pos_y][click_pos_x].promotion_pieces()
                                 now_turn = not now_turn
                             selected_pos = None
                             movable = []
